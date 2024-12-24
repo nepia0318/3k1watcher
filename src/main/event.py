@@ -9,7 +9,7 @@ async def search(ctx):
         embedMsg = discord.Embed(
             title='hoge',
             description=f'\
-                fuga: {'poyo'}',
+                fuga: {'mannsyuu3923'}',
             color=discord.Colour.green()
         )
 
