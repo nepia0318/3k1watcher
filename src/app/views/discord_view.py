@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 class DiscordView:
     async def sendSearchResult(self, ctx, results):
         try:
-            await ctx.send(f'まん３に関する検索結果は{len(results)}件でした')
+            await ctx.send(f'まん３に関する検索結果が{len(results)}件ヒットしました')
             for result in results:
                 snippet = re.findall('(?<=\().+?(?=\))', result["snippet"])
                 embedMsg = discord.Embed(
@@ -26,7 +26,7 @@ class DiscordView:
 
     async def sendGithubActivity(self, ctx, results):
         try:
-            await ctx.send(f"GitHubのアクティビティ: {len(results)}件")
+            await ctx.send(f"まん３のGitHubアクティビティが{len(results)}件ヒットしました")
             for result in results:
                 match result["type"]:
                     case "CreateEvent":
@@ -40,30 +40,30 @@ class DiscordView:
                         embedMsg = parseGithubIssuesEvent(result)
                         pass
                     case _:
-                        embedMsg = discord.Embed(
-                            title=result["type"],
-                            url=result["repo"]["url"],
-                            color=discord.Colour.green()
-                        )
+                        embedMsg = parseGithubOtherEvent(result)
                         pass
 
-                embedMsg.set_thumbnail(url=result["actor"]["avatar_url"])
+                embedMsg.set_author(name=result["actor"]["display_login"], url=result["actor"]["url"], icon_url=result["actor"]["avatar_url"])
                 await ctx.send(embed=embedMsg)
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")
 
+def getHtmlUrlFromApiUrl(url):
+    return url.replace("api.github.com", "github.com").replace("/repos/", "/")
+
 def parseGithubCreateEvent(data):
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
-        description=f"リポジトリ{data["repo"]["name"]}を作成しました",
-        url=f"https://github.com/{data["repo"]["name"]}",
+        description=f"リポジトリを作成しました",
+        url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
 
     return embedMsg
 
 def parseGithubPushEvent(data):
+    commits_num = len(data["payload"]["commits"])
     commits_string = ""
     for commit in data["payload"]["commits"]:
         commits_string += f"- {commit["message"]},\n"
@@ -71,9 +71,9 @@ def parseGithubPushEvent(data):
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
         description=f"\
-            pushしました\n\
+            {commits_num}件のcommitをpushしました\n\
             {commits_string}",
-        url=f"https://github.com/{data["repo"]["name"]}",
+        url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
 
@@ -82,8 +82,8 @@ def parseGithubPushEvent(data):
 def parseGithubForkEvent(data):
     embedMsg = discord.Embed(
         title=data["payload"]["forkee"]["full_name"],
-        description=f"{data["repo"]["name"]}をforkしました",
-        url=f"https://github.com/{data["payload"]["forkee"]["full_name"]}",
+        description=f"[{data["repo"]["name"]}]({getHtmlUrlFromApiUrl(data["repo"]["url"])})をforkしました",
+        url=data["payload"]["forkee"]["html_url"],
         color=discord.Colour.green()
     )
 
@@ -103,10 +103,18 @@ def parseGithubIssuesEvent(data):
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
         description=f"\
-            Issueを{ACTIONS[data["payload"]["action"]]}しました\n\
+            issueを{ACTIONS[data["payload"]["action"]]}しました\n\
             [{data["payload"]["issue"]["title"]}]({data["payload"]["issue"]["html_url"]})",
-        url=f"https://github.com/{data["repo"]["name"]}",
+        url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
 
     return embedMsg
+
+def parseGithubOtherEvent(data):
+    embedMsg = discord.Embed(
+        title=data["type"],
+        url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
+        color=discord.Colour.green()
+    )
+    return None
