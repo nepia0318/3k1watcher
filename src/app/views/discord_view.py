@@ -29,6 +29,8 @@ class DiscordView:
             await ctx.send(f"GitHubのアクティビティ: {len(results)}件")
             for result in results:
                 match result["type"]:
+                    case "CreateEvent":
+                        embedMsg = parseGitHubCreateEvent(result)
                     case "PushEvent":
                         embedMsg = parseGitHubPushEvent(result)
                     case "ForkEvent":
@@ -47,6 +49,16 @@ class DiscordView:
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")
+
+def parseGitHubCreateEvent(data):
+    embedMsg = discord.Embed(
+        title=data["repo"]["name"],
+        description=f"リポジトリ{data["repo"]["name"]}を作成しました",
+        url=f"https://github.com/{data["repo"]["name"]}",
+        color=discord.Colour.green()
+    )
+
+    return embedMsg
 
 def parseGitHubPushEvent(data):
     commits_string = ""
