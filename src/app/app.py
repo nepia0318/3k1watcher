@@ -40,6 +40,10 @@ class App:
         async def show_info(ctx):
             await self.controller.searchResult(ctx)
 
+        @bot.command(name=cmdName('github', self.is_dev))
+        async def show_info(ctx):
+            await self.controller.githubResult(ctx)
+
         @bot.event
         async def on_command_error(ctx, e):
             cmd = ctx.invoked_with
