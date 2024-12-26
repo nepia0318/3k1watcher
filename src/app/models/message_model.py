@@ -48,7 +48,7 @@ class MessageModel:
             "X-GitHub-Api-Version": "2022-11-28"
         }
         params = {
-            "per_page": 10,
+            "per_page": 30,
             "page": 1
         }
 

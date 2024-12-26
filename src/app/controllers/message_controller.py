@@ -29,7 +29,7 @@ class MessageController:
     async def githubResult(self, ctx):
         try:
             results = self.model.getGitHubActivity()
-            await self.view.sendGitHubActivity(ctx, results)
+            await self.view.sendGithubActivity(ctx, results)
 
         except Exception as e:
             await ctx.send("取得に失敗しました")

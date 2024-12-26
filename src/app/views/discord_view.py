@@ -24,17 +24,20 @@ class DiscordView:
             logger.error(f"Error: {e}")
             await ctx.send('取得に失敗しました')
 
-    async def sendGitHubActivity(self, ctx, results):
+    async def sendGithubActivity(self, ctx, results):
         try:
             await ctx.send(f"GitHubのアクティビティ: {len(results)}件")
             for result in results:
                 match result["type"]:
                     case "CreateEvent":
-                        embedMsg = parseGitHubCreateEvent(result)
+                        embedMsg = parseGithubCreateEvent(result)
                     case "PushEvent":
-                        embedMsg = parseGitHubPushEvent(result)
+                        embedMsg = parseGithubPushEvent(result)
                     case "ForkEvent":
-                        embedMsg = parseGitHubForkEvent(result)
+                        embedMsg = parseGithubForkEvent(result)
+                        pass
+                    case "IssuesEvent":
+                        embedMsg = parseGithubIssuesEvent(result)
                         pass
                     case _:
                         embedMsg = discord.Embed(
@@ -50,7 +53,7 @@ class DiscordView:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")
 
-def parseGitHubCreateEvent(data):
+def parseGithubCreateEvent(data):
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
         description=f"リポジトリ{data["repo"]["name"]}を作成しました",
@@ -60,7 +63,7 @@ def parseGitHubCreateEvent(data):
 
     return embedMsg
 
-def parseGitHubPushEvent(data):
+def parseGithubPushEvent(data):
     commits_string = ""
     for commit in data["payload"]["commits"]:
         commits_string += f"- {commit["message"]},\n"
@@ -76,11 +79,33 @@ def parseGitHubPushEvent(data):
 
     return embedMsg
 
-def parseGitHubForkEvent(data):
+def parseGithubForkEvent(data):
     embedMsg = discord.Embed(
         title=data["payload"]["forkee"]["full_name"],
         description=f"{data["repo"]["name"]}をforkしました",
         url=f"https://github.com/{data["payload"]["forkee"]["full_name"]}",
+        color=discord.Colour.green()
+    )
+
+    return embedMsg
+
+def parseGithubIssuesEvent(data):
+    ACTIONS = {
+        "opened": "オープン",
+        "edited": "変更",
+        "closed": "クローズ",
+        "reopend": "再オープン",
+        "assigned": "アサイン",
+        "unassigned": "アサイン解除",
+        "labeled": "ラベル付与",
+        "unlabeled": "ラベル削除"
+    }
+    embedMsg = discord.Embed(
+        title=data["repo"]["name"],
+        description=f"\
+            Issueを{ACTIONS[data["payload"]["action"]]}しました\n\
+            [{data["payload"]["issue"]["title"]}]({data["payload"]["issue"]["html_url"]})",
+        url=f"https://github.com/{data["repo"]["name"]}",
         color=discord.Colour.green()
     )
 
