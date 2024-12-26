@@ -25,3 +25,11 @@ class MessageController:
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send('取得に失敗しました')
+
+    async def githubResult(self, ctx):
+        try:
+            results = self.model.getGitHubActivity()
+            await self.view.sendGithubActivity(ctx, results)
+
+        except Exception as e:
+            await ctx.send("取得に失敗しました")
