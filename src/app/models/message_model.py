@@ -40,7 +40,6 @@ class MessageModel:
         return results
 
     def getGitHubActivity(self):
-        print(self.GITHUB_API_URL)
         url = self.GITHUB_API_URL
         headers = {
             "Accept": "application/vnd.github+json",

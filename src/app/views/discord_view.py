@@ -1,7 +1,7 @@
 import re
 import discord
 from logging import getLogger
-
+from datetime import datetime
 logger = getLogger(__name__)
 
 class DiscordView:
@@ -53,9 +53,13 @@ def getHtmlUrlFromApiUrl(url):
     return url.replace("api.github.com", "github.com").replace("/repos/", "/")
 
 def parseGithubCreateEvent(data):
+    dt = datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
-        description=f"リポジトリを作成しました",
+        description=f"\
+            リポジトリを作成しました\n\
+            \n[{formatted_dt}]",
         url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
@@ -68,11 +72,14 @@ def parseGithubPushEvent(data):
     for commit in data["payload"]["commits"]:
         commits_string += f"- {commit["message"]},\n"
     commits_string = commits_string[:-2]
+    dt = datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
         description=f"\
             {commits_num}件のcommitをpushしました\n\
-            {commits_string}",
+            \n{commits_string}\
+            \n\n[{formatted_dt}]", # 何故か上の行の\nが認識されない
         url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
@@ -80,9 +87,13 @@ def parseGithubPushEvent(data):
     return embedMsg
 
 def parseGithubForkEvent(data):
+    dt = datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
     embedMsg = discord.Embed(
         title=data["payload"]["forkee"]["full_name"],
-        description=f"[{data["repo"]["name"]}]({getHtmlUrlFromApiUrl(data["repo"]["url"])})をforkしました",
+        description=f"\
+            [{data["repo"]["name"]}]({getHtmlUrlFromApiUrl(data["repo"]["url"])})をforkしました\n\
+            \n[{formatted_dt}]",
         url=data["payload"]["forkee"]["html_url"],
         color=discord.Colour.green()
     )
@@ -100,11 +111,15 @@ def parseGithubIssuesEvent(data):
         "labeled": "ラベル付与",
         "unlabeled": "ラベル削除"
     }
+
+    dt = datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
     embedMsg = discord.Embed(
         title=data["repo"]["name"],
         description=f"\
             issueを{ACTIONS[data["payload"]["action"]]}しました\n\
-            [{data["payload"]["issue"]["title"]}]({data["payload"]["issue"]["html_url"]})",
+            \n[{data["payload"]["issue"]["title"]}]({data["payload"]["issue"]["html_url"]})\n\
+            \n[{formatted_dt}]",
         url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
@@ -112,8 +127,12 @@ def parseGithubIssuesEvent(data):
     return embedMsg
 
 def parseGithubOtherEvent(data):
+    dt = datetime.strptime(data["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
+
     embedMsg = discord.Embed(
         title=data["type"],
+        description=f"\n[{formatted_dt}]",
         url=getHtmlUrlFromApiUrl(data["repo"]["url"]),
         color=discord.Colour.green()
     )
