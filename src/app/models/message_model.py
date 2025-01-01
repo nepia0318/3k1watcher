@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from logging import getLogger
 from googleapiclient.discovery import build
 
+from ..dto.GithubEvent import GithubEvent
+
 logger = getLogger(__name__)
 
 class MessageModel:
@@ -16,7 +18,7 @@ class MessageModel:
         self.GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
         self.GITHUB_API_URL = f"https://api.github.com/users/{self.GITHUB_USERNAME}/events"
 
-    def getSearchResponse(self, query):
+    def get_search_response(self, query):
         service = build("customsearch", "v1", developerKey=self.GOOGLE_SEARCH_API_KEY)
         try:
             response = (
@@ -39,8 +41,7 @@ class MessageModel:
 
         return results
 
-    def getGitHubActivity(self):
-        print(self.GITHUB_API_URL)
+    def get_github_activity(self) -> list[GithubEvent]:
         url = self.GITHUB_API_URL
         headers = {
             "Accept": "application/vnd.github+json",
@@ -56,9 +57,15 @@ class MessageModel:
             response = requests.get(url=url, headers=headers, params=params)
             response.raise_for_status()
             results = json.loads(response.text)
-            # print(f"type: {results[0]["type"]}, name: {results[0]["payload"]["forkee"]["name"]}, full_name: {results[0]["payload"]["forkee"]["full_name"]}")
         except Exception as e:
             logger.error(e)
             raise Exception("Request error.")
 
-        return results
+        events = []
+        try:
+            for item in results:
+                events.append(GithubEvent.from_json(item))
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            raise Exception("JSON parsing error.")
+        return events
