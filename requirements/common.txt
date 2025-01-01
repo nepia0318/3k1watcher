@@ -1,0 +1,6 @@
+discord.py
+python-dotenv
+Requests
+coloredlogs
+google-api-python-client
+requests
