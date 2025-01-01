@@ -32,6 +32,7 @@ class MessageModel:
                     start=1
                 ).execute()
             )
+
         except Exception as e:
             logger.error(e)
             raise Exception("Request error.")
@@ -56,7 +57,8 @@ class MessageModel:
         try:
             response = requests.get(url=url, headers=headers, params=params)
             response.raise_for_status()
-            results = json.loads(response.text)
+            results = response.json()
+
         except Exception as e:
             logger.error(e)
             raise Exception("Request error.")
@@ -65,6 +67,7 @@ class MessageModel:
         try:
             for item in results:
                 events.append(GithubEvent.from_json(item))
+
         except Exception as e:
             logger.error(f"Error: {e}")
             raise Exception("JSON parsing error.")
