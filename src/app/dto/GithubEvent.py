@@ -5,11 +5,11 @@ from .GithubAccount import GithubAccount
 
 @dataclass
 class GithubEvent:
-    title: str
-    message: str
-    url: str
-    author: GithubAccount
-    created_at: datetime
+    title: str = ""
+    message: str = ""
+    url: str = ""
+    author: GithubAccount = None
+    created_at: datetime = None
 
     @classmethod
     def from_json(cls, json):
@@ -76,7 +76,7 @@ class GithubEvent:
         self.title = json["repo"]["name"]
         self.message = f"\
             issueを{ACTIONS[json["payload"]["action"]]}しました\n\
-            \n[{json["payload"]["issue"]["title"]}]({json["payload"]["issue"]["html_url"]})"
+            \n- [{json["payload"]["issue"]["title"]}]({json["payload"]["issue"]["html_url"]})"
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
 
     def parse_github_other_event(self, json) -> None:
