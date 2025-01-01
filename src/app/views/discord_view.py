@@ -4,7 +4,7 @@ from logging import getLogger
 from datetime import datetime
 logger = getLogger(__name__)
 
-from ..dto.GithubEvent import GithubEvent
+from ..dto.github_event import GithubEvent
 
 class DiscordView:
     async def send_search_result(self, ctx, results):

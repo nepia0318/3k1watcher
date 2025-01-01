@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from logging import getLogger
 from googleapiclient.discovery import build
 
-from ..dto.GithubEvent import GithubEvent
+from ..dto.github_event import GithubEvent
 
 logger = getLogger(__name__)
 
