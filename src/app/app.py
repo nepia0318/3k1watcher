@@ -36,13 +36,13 @@ class App:
         async def on_ready():
             logger.info(f'We have logged in as {bot.user}')
 
-        @bot.command(name=cmdName('search', self.is_dev))
+        @bot.command(name=cmd_name('search', self.is_dev))
         async def show_info(ctx):
-            await self.controller.searchResult(ctx)
+            await self.controller.search_result(ctx)
 
-        @bot.command(name=cmdName('github', self.is_dev))
+        @bot.command(name=cmd_name('github', self.is_dev))
         async def show_info(ctx):
-            await self.controller.githubResult(ctx)
+            await self.controller.github_result(ctx)
 
         @bot.event
         async def on_command_error(ctx, e):
@@ -54,7 +54,7 @@ class App:
 
         bot.run(self.token, log_handler=None)
 
-def cmdName(name, isDev):
+def cmd_name(name, isDev):
     if isDev:
         return f'{name}-dev'
     return name

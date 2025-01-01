@@ -17,19 +17,19 @@ class MessageController:
         self.model = MessageModel()
         self.view = DiscordView()
 
-    async def searchResult(self, ctx):
+    async def search_result(self, ctx):
         try:
-            results = self.model.getSearchResponse(self.query)
-            await self.view.sendSearchResult(ctx, results)
+            results = self.model.get_search_response(self.query)
+            await self.view.send_search_result(ctx, results)
 
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send('取得に失敗しました')
 
-    async def githubResult(self, ctx):
+    async def github_result(self, ctx):
         try:
-            events = self.model.getGitHubActivity()
-            await self.view.sendGithubActivity(ctx, events)
+            events = self.model.get_github_activity()
+            await self.view.send_github_activity(ctx, events)
 
         except Exception as e:
             logger.error(f"Error: {e}")

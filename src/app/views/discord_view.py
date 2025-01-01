@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 from ..dto.GithubEvent import GithubEvent
 
 class DiscordView:
-    async def sendSearchResult(self, ctx, results):
+    async def send_search_result(self, ctx, results):
         try:
             await ctx.send(f'まん３に関する検索結果が{len(results)}件ヒットしました')
             for result in results:
@@ -26,7 +26,7 @@ class DiscordView:
             logger.error(f"Error: {e}")
             await ctx.send('取得に失敗しました')
 
-    async def sendGithubActivity(self, ctx, events: list[GithubEvent]):
+    async def send_github_activity(self, ctx, events: list[GithubEvent]):
         try:
             await ctx.send(f"まん３のGitHubアクティビティが{len(events)}件ヒットしました")
             for event in events:

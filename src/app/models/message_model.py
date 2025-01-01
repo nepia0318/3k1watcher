@@ -18,7 +18,7 @@ class MessageModel:
         self.GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
         self.GITHUB_API_URL = f"https://api.github.com/users/{self.GITHUB_USERNAME}/events"
 
-    def getSearchResponse(self, query):
+    def get_search_response(self, query):
         service = build("customsearch", "v1", developerKey=self.GOOGLE_SEARCH_API_KEY)
         try:
             response = (
@@ -41,7 +41,7 @@ class MessageModel:
 
         return results
 
-    def getGitHubActivity(self) -> list[GithubEvent]:
+    def get_github_activity(self) -> list[GithubEvent]:
         url = self.GITHUB_API_URL
         headers = {
             "Accept": "application/vnd.github+json",
