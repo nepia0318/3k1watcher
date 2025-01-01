@@ -1,2 +1,2 @@
-from . import GithubEvent
-from . import GithubAccount
+from . import github_event
+from . import github_account

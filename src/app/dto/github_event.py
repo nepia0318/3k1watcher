@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from .GithubAccount import GithubAccount
+from .github_account import GithubAccount
 
 @dataclass
 class GithubEvent:
