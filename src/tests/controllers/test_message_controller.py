@@ -41,11 +41,40 @@ class TestMessageController:
         ]
 
     @pytest.mark.asyncio
-    async def test_search_result(self, mocker: MockerFixture, message_controller, mock_search_results):
+    async def test_search_result_success(
+        self, mocker: MockerFixture, message_controller,
+            mock_ctx, mock_search_results):
         mocker.patch(
             "src.app.controllers.message_controller.MessageModel.get_search_results",
             return_value=mock_search_results
         )
+        mock_send_search_results = mocker.patch(
+            "src.app.controllers.message_controller.DiscordView.send_search_results"
+        )
+
+        await message_controller.search_result(mock_ctx)
+
+        mock_send_search_results.assert_called_once_with(
+            mock_ctx,
+            mock_search_results
+        )
+
+    @pytest.mark.asyncio
+    async def test_search_result_error(
+        self, mocker: MockerFixture, message_controller,
+            mock_ctx, mock_search_results):
+        mocker.patch(
+            "src.app.controllers.message_controller.MessageModel.get_search_results",
+            side_effect=Exception("Bing search request error.")
+        )
+        mocker.patch(
+            "src.app.controllers.message_controller.DiscordView.send_search_results"
+        )
+
+        await message_controller.search_result(mock_ctx)
+
+        mock_ctx.send.assert_called_with("取得に失敗しました")
+
 
     @pytest.mark.asyncio
     async def test_github_activity_success(self, mocker: MockerFixture, message_controller, mock_ctx, mock_github_events):

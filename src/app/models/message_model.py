@@ -2,10 +2,9 @@ import os
 import requests
 from dotenv import load_dotenv
 from logging import getLogger
-from googleapiclient.discovery import build
 
-from ..dto.search_result import SearchResult
-from ..dto.github_event import GithubEvent
+from src.app.dto.github_event import GithubEvent
+from src.app.dto.search_results import SearchResults
 
 logger = getLogger(__name__)
 
@@ -13,36 +12,30 @@ logger = getLogger(__name__)
 class MessageModel:
     def __init__(self):
         load_dotenv()
-        self.GOOGLE_SEARCH_API_KEY = os.getenv("GOOGLE_SEARCH_API_KEY")
-        self.GOOGLE_SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
+        self.BING_SEARCH_SUBSCRIPTION_KEY = os.getenv(key="BING_SUBSCRIPTION_KEY")
+        self.BING_SEARCH_API_URL = "https://api.bing.microsoft.com/v7.0/search"
         self.GITHUB_USERNAME = os.getenv("3K1_GIT_USERNAME")
         self.GITHUB_API_TOKEN = os.getenv("GITHUB_API_TOKEN")
         self.GITHUB_API_URL = f"https://api.github.com/users/{self.GITHUB_USERNAME}/events"
 
-    def get_search_results(self, query) -> list[SearchResult]:
-        service = build("customsearch", "v1", developerKey=self.GOOGLE_SEARCH_API_KEY)
+    def get_search_results(self, query) -> SearchResults:
+
         try:
-            response = (
-                service.cse()
-                .list(
-                    q=query,
-                    cx=self.GOOGLE_SEARCH_ENGINE_ID,
-                    lr='lang_ja',
-                    filter=0,
-                    num=10,
-                    start=1
-                ).execute()
-            )
+            assert self.BING_SEARCH_SUBSCRIPTION_KEY
+
+            headers = {"Ocp-Apim-Subscription-Key": self.BING_SEARCH_SUBSCRIPTION_KEY}
+            params = {"q": query, "textDecorations": True, "textFormat": "HTML"}
+            response = requests.get(self.BING_SEARCH_API_URL, headers=headers, params=params)
+            response.raise_for_status()
+            response = response.json()
 
         except Exception as e:
             logger.error(e)
             raise Exception("Request error.")
 
-        logger.info(f"Number of results: {response["searchInformation"]["totalResults"]}")
+        logger.info(f"Number of results: {response["webPages"]["totalEstimatedMatches"]}")
 
-        results = []
-        for result in response["items"]:
-            results.append(SearchResult.from_json(result))
+        results = SearchResults.from_json(response["webPages"])
 
         return results
 
@@ -61,7 +54,7 @@ class MessageModel:
         try:
             response = requests.get(url=url, headers=headers, params=params)
             response.raise_for_status()
-            results = response.json()
+            response = response.json()
 
         except Exception as e:
             logger.error(e)
@@ -69,7 +62,7 @@ class MessageModel:
 
         events = []
         try:
-            for item in results:
+            for item in response:
                 events.append(GithubEvent.from_json(item))
 
         except Exception as e:

@@ -1,41 +1,54 @@
+from unittest.mock import MagicMock
 import pytest
 import discord
 from datetime import datetime
 from pytest_mock import MockerFixture
 
+from src.app.views.discord_view import DiscordView
+from src.app.dto.search_results import SearchResults
 from src.app.dto.search_result import SearchResult
 from src.app.dto.github_event import GithubEvent, GithubAccount
 
 
 class TestDiscordView:
     @pytest.fixture
-    def discord_view(self):
+    def discord_view(self) -> DiscordView:
         from src.app.views.discord_view import DiscordView
         return DiscordView()
 
     @pytest.fixture
-    def mock_ctx(self, mocker: MockerFixture):
+    def mock_ctx(self, mocker: MockerFixture) -> MagicMock:
         mocked = mocker.MagicMock()
         mocked.send = mocker.AsyncMock()
         return mocked
 
     @pytest.fixture
-    def mock_search_results(self):
-        return [
-            SearchResult(
-                title="title1",
-                url="https://example.com/article1",
-                snippet="description1"
-            ),
-            SearchResult(
-                title="title2",
-                url="https://example.com/article2",
-                snippet="description2"
-            )
-        ]
+    def mock_search_results(self) -> SearchResults:
+        return SearchResults(
+            web_search_url="https://example.com/search?q=3k1",
+            total=2,
+            items=[
+                SearchResult(
+                    title="title1",
+                    url="https://example.com/article1",
+                    snippet="description1",
+                    last_crawled=datetime(
+                        year=2025, month=1, day=2, hour=14, minute=0, second=0
+                    )
+                ),
+                SearchResult(
+                    title="title2",
+                    url="https://example.com/article2",
+                    snippet="outer<b>description2<b/>outer",
+                    last_crawled=datetime(
+                        year=1919, month=9, day=29, hour=12, minute=15, second=40
+                    )
+                )
+            ]
+        )
 
     @pytest.fixture
-    def mock_github_events(self):
+    def mock_github_events(self) -> list[GithubEvent]:
         return [
             GithubEvent(
                 title="title1",
@@ -64,7 +77,9 @@ class TestDiscordView:
         ]
 
     @pytest.mark.asyncio
-    async def test_send_search_results_success(self, mocker, discord_view, mock_ctx, mock_search_results):
+    async def test_send_search_results_success(
+        self, mocker: MockerFixture, discord_view,
+            mock_ctx, mock_search_results):
         await discord_view.send_search_results(mock_ctx, mock_search_results)
         mock_ctx.send.assert_any_call("まん３に関する検索結果が2件ヒットしました")
 
@@ -76,15 +91,17 @@ class TestDiscordView:
         assert embed_call1.title == "title1"
         assert embed_call1.url == "https://example.com/article1"
         assert embed_call1.description == "description1"
+        assert embed_call1.footer.text == "2025/01/02 14:00:00"
 
         embed_call2 = calls[2].kwargs["embed"]
         assert isinstance(embed_call2, discord.Embed)
         assert embed_call2.title == "title2"
         assert embed_call2.url == "https://example.com/article2"
-        assert embed_call2.description == "description2"
+        assert embed_call2.description == "outer**description2**outer"
+        assert embed_call2.footer.text == "1919/09/29 12:15:40"
 
     @pytest.mark.asyncio
-    async def test_send_search_results_error(self, mocker, discord_view, mock_ctx):
+    async def test_send_search_results_error(self, mocker: MockerFixture, discord_view, mock_ctx):
         mock_ctx.send.side_effect = Exception("View error.")
 
         with pytest.raises(Exception):
@@ -93,7 +110,7 @@ class TestDiscordView:
         mock_ctx.send.assert_called_with("取得に失敗しました")
 
     @pytest.mark.asyncio
-    async def test_send_github_activities_success(self, mocker, discord_view, mock_ctx, mock_github_events):
+    async def test_send_github_activities_success(self, mocker: MockerFixture, discord_view, mock_ctx, mock_github_events):
         await discord_view.send_github_activities(mock_ctx, mock_github_events)
         mock_ctx.send.assert_any_call("まん３のGitHubアクティビティが2件ヒットしました")
 
@@ -125,7 +142,7 @@ class TestDiscordView:
         assert embed_call2.footer.text == "1919/09/29 12:15:40"
 
     @pytest.mark.asyncio
-    async def test_send_github_activities_error(self, mocker, discord_view, mock_ctx):
+    async def test_send_github_activities_error(self, mocker: MockerFixture, discord_view, mock_ctx):
         mock_ctx.send.side_effect = Exception("View error.")
 
         with pytest.raises(Exception):
