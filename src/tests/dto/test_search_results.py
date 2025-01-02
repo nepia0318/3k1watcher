@@ -64,18 +64,18 @@ class TestSearchResults:
         assert results.web_search_url == "https://example.com/search?q=3k1"
         assert results.total == 2
 
-        assert results.results[0].url == "https://example.com/article1"
-        assert results.results[0].title == "title1"
-        assert results.results[0].snippet == "description1"
-        assert results.results[0].last_crawled == datetime(
+        assert results.items[0].url == "https://example.com/article1"
+        assert results.items[0].title == "title1"
+        assert results.items[0].snippet == "description1"
+        assert results.items[0].last_crawled == datetime(
             year=2023, month=12, day=30,
             hour=3, minute=19, second=0
         )
 
-        assert results.results[1].url == "https://example.com/article2"
-        assert results.results[1].title == "title2"
-        assert results.results[1].snippet == "description2"
-        assert results.results[1].last_crawled == datetime(
+        assert results.items[1].url == "https://example.com/article2"
+        assert results.items[1].title == "title2"
+        assert results.items[1].snippet == "description2"
+        assert results.items[1].last_crawled == datetime(
             year=2024, month=5, day=17,
             hour=6, minute=20, second=0
         )
