@@ -13,7 +13,7 @@ class DiscordView:
         try:
             await ctx.send(f"まん３に関する検索結果が{results.total}件ヒットしました")
             for result in results.items:
-                md_snippet = re.compile("<b/*>").sub("**", result.snippet)
+                md_snippet = re.compile("</*b>").sub("**", result.snippet)
                 print(md_snippet)
                 embedMsg = discord.Embed(
                     title=result.title,
