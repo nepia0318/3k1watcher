@@ -1,18 +1,20 @@
+import textwrap
 from dataclasses import dataclass
 from datetime import datetime
 
 from .github_account import GithubAccount
 
+
 @dataclass
 class GithubEvent:
     title: str = ""
-    message: str = ""
     url: str = ""
+    message: str = ""
     author: GithubAccount = None
     created_at: datetime = None
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict):
         event = GithubEvent()
         match json["type"]:
             case "CreateEvent":
@@ -39,9 +41,10 @@ class GithubEvent:
 
     def parse_github_create_event(self, json) -> None:
         self.title = json["repo"]["name"]
-        self.message = f"\
-            リポジトリを作成しました"
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
+        self.message = textwrap.dedent("""\
+            リポジトリを作成しました\
+        """).strip()
 
     def parse_github_push_event(self, json) -> None:
         commits_num = len(json["payload"]["commits"])
@@ -51,16 +54,18 @@ class GithubEvent:
         commits_string = commits_string[:-2]
 
         self.title = json["repo"]["name"]
-        self.message = f"\
-            {commits_num}件のcommitをpushしました\n\
-            \n{commits_string}"
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
+        self.message = textwrap.dedent(f"""\
+            {commits_num}件のcommitをpushしました
+            \n{commits_string}\
+        """).strip()
 
     def parse_github_fork_event(self, json) -> None:
         self.title = json["payload"]["forkee"]["full_name"]
-        self.message = f"\
-            [{json["repo"]["name"]}]({self.get_html_url_from_api_url(json["repo"]["url"])})をforkしました"
         self.url = json["payload"]["forkee"]["html_url"]
+        self.message = textwrap.dedent(f"""\
+            [{json["repo"]["name"]}]({self.get_html_url_from_api_url(json["repo"]["url"])})をforkしました\
+        """).strip()
 
     def parse_github_issues_event(self, json) -> None:
         ACTIONS = {
@@ -74,11 +79,14 @@ class GithubEvent:
         }
 
         self.title = json["repo"]["name"]
-        self.message = f"\
-            issueを{ACTIONS[json["payload"]["action"]]}しました\n\
-            \n- [{json["payload"]["issue"]["title"]}]({json["payload"]["issue"]["html_url"]})"
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
+        self.message = textwrap.dedent(f"""\
+            issueを{ACTIONS[json["payload"]["action"]]}しました
+
+            - [{json["payload"]["issue"]["title"]}]({json["payload"]["issue"]["html_url"]})
+        """).strip()
 
     def parse_github_other_event(self, json) -> None:
-        self.title = json["type"]
+        self.title = json["repo"]["name"]
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
+        self.message = json["type"]

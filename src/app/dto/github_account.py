@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class GithubAccount:
     name: str
@@ -7,7 +8,7 @@ class GithubAccount:
     avatar_url: str
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json: dict):
         return cls(
             name=json["display_login"],
             url=json["url"],
