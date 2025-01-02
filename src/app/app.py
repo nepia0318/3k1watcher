@@ -42,7 +42,7 @@ class App:
 
         @bot.command(name=cmd_name('github', self.is_dev))
         async def show_info(ctx):
-            await self.controller.github_result(ctx)
+            await self.controller.github_activity(ctx)
 
         @bot.event
         async def on_command_error(ctx, e):

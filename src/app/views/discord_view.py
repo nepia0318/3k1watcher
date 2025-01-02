@@ -1,22 +1,20 @@
-import re
 import discord
+import textwrap
 from logging import getLogger
-from datetime import datetime
 logger = getLogger(__name__)
 
+from ..dto.search_result import SearchResult
 from ..dto.github_event import GithubEvent
 
 class DiscordView:
-    async def send_search_result(self, ctx, results):
+    async def send_search_results(self, ctx, results: list[SearchResult]):
         try:
-            await ctx.send(f'まん３に関する検索結果が{len(results)}件ヒットしました')
+            await ctx.send(f"まん３に関する検索結果が{len(results)}件ヒットしました")
             for result in results:
-                snippet = re.findall('(?<=\().+?(?=\))', result["snippet"])
                 embedMsg = discord.Embed(
-                    title=result["title"],
-                    url=result["link"],
-                    description=f'\
-                        {result["snippet"]}',
+                    title=result.title,
+                    url=result.url,
+                    description=result.snippet,
                     color=discord.Colour.green()
                 )
 
@@ -24,22 +22,28 @@ class DiscordView:
 
         except Exception as e:
             logger.error(f"Error: {e}")
-            await ctx.send('取得に失敗しました')
+            await ctx.send("取得に失敗しました")
 
-    async def send_github_activity(self, ctx, events: list[GithubEvent]):
+    async def send_github_activities(self, ctx, events: list[GithubEvent]):
         try:
             await ctx.send(f"まん３のGitHubアクティビティが{len(events)}件ヒットしました")
             for event in events:
                 embedMsg = discord.Embed(
                     title=event.title,
-                    description=event.message,
-                    url=event.url
+                    url=event.url,
+                    description=event.message
                 )
-                embedMsg.set_author(name=event.author.name, url=event.author.url, icon_url=event.author.avatar_url)
-                dt = event.created_at
-                formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
-                embedMsg.set_footer(text=formatted_dt)
+
+                if event.author != None:
+                    embedMsg.set_author(name=event.author.name, url=event.author.url, icon_url=event.author.avatar_url)
+
+                if event.created_at != None:
+                    dt = event.created_at
+                    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
+                    embedMsg.set_footer(text=formatted_dt)
+
                 await ctx.send(embed=embedMsg)
+
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")

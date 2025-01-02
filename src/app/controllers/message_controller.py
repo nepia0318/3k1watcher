@@ -19,17 +19,17 @@ class MessageController:
 
     async def search_result(self, ctx):
         try:
-            results = self.model.get_search_response(self.query)
-            await self.view.send_search_result(ctx, results)
+            results = self.model.get_search_results(self.query)
+            await self.view.send_search_results(ctx, results)
 
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send('取得に失敗しました')
 
-    async def github_result(self, ctx):
+    async def github_activity(self, ctx):
         try:
-            events = self.model.get_github_activity()
-            await self.view.send_github_activity(ctx, events)
+            events = self.model.get_github_activities()
+            await self.view.send_github_activities(ctx, events)
 
         except Exception as e:
             logger.error(f"Error: {e}")
