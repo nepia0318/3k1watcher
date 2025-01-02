@@ -39,7 +39,7 @@ class TestDiscordView:
                 SearchResult(
                     title="title2",
                     url="https://example.com/article2",
-                    snippet="outer<b>description2<b/>outer",
+                    snippet="outer<b>description2</b>outer",
                     last_crawled=datetime(
                         year=1919, month=9, day=29, hour=12, minute=15, second=40
                     )
