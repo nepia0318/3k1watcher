@@ -36,7 +36,7 @@ class TestDiscordView:
                 SearchResult(
                     title="title2",
                     url="https://example.com/article2",
-                    snippet="description2"
+                    snippet="outer<b>description2<b/>outer"
                 )
             ]
         )
@@ -75,7 +75,6 @@ class TestDiscordView:
         self, mocker: MockerFixture, discord_view,
             mock_ctx, mock_search_results):
         await discord_view.send_search_results(mock_ctx, mock_search_results)
-        print(f"total_test: {mock_search_results.total}")
         mock_ctx.send.assert_any_call("まん３に関する検索結果が2件ヒットしました")
 
         calls = mock_ctx.send.call_args_list
@@ -91,7 +90,7 @@ class TestDiscordView:
         assert isinstance(embed_call2, discord.Embed)
         assert embed_call2.title == "title2"
         assert embed_call2.url == "https://example.com/article2"
-        assert embed_call2.description == "description2"
+        assert embed_call2.description == "outer**description2**outer"
 
     @pytest.mark.asyncio
     async def test_send_search_results_error(self, mocker: MockerFixture, discord_view, mock_ctx):

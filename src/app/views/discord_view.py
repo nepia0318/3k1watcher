@@ -1,4 +1,5 @@
 import discord
+import re
 from logging import getLogger
 
 from src.app.dto.search_results import SearchResults
@@ -12,10 +13,12 @@ class DiscordView:
         try:
             await ctx.send(f"まん３に関する検索結果が{results.total}件ヒットしました")
             for result in results.items:
+                md_snippet = re.compile("<b/*>").sub("**", result.snippet)
+                print(md_snippet)
                 embedMsg = discord.Embed(
                     title=result.title,
                     url=result.url,
-                    description=result.snippet,
+                    description=md_snippet,
                     color=discord.Colour.green()
                 )
 
