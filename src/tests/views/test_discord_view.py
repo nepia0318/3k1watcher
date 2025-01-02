@@ -31,12 +31,18 @@ class TestDiscordView:
                 SearchResult(
                     title="title1",
                     url="https://example.com/article1",
-                    snippet="description1"
+                    snippet="description1",
+                    last_crawled=datetime(
+                        year=2025, month=1, day=2, hour=14, minute=0, second=0
+                    )
                 ),
                 SearchResult(
                     title="title2",
                     url="https://example.com/article2",
-                    snippet="outer<b>description2<b/>outer"
+                    snippet="outer<b>description2<b/>outer",
+                    last_crawled=datetime(
+                        year=1919, month=9, day=29, hour=12, minute=15, second=40
+                    )
                 )
             ]
         )
@@ -85,12 +91,14 @@ class TestDiscordView:
         assert embed_call1.title == "title1"
         assert embed_call1.url == "https://example.com/article1"
         assert embed_call1.description == "description1"
+        assert embed_call1.footer.text == "2025/01/02 14:00:00"
 
         embed_call2 = calls[2].kwargs["embed"]
         assert isinstance(embed_call2, discord.Embed)
         assert embed_call2.title == "title2"
         assert embed_call2.url == "https://example.com/article2"
         assert embed_call2.description == "outer**description2**outer"
+        assert embed_call2.footer.text == "1919/09/29 12:15:40"
 
     @pytest.mark.asyncio
     async def test_send_search_results_error(self, mocker: MockerFixture, discord_view, mock_ctx):

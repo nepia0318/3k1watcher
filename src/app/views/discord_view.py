@@ -22,12 +22,16 @@ class DiscordView:
                     color=discord.Colour.green()
                 )
 
+                if result.last_crawled is not None:
+                    embedMsg.set_footer(
+                        text=result.last_crawled.strftime("%Y/%m/%d %H:%M:%S")
+                    )
+
                 await ctx.send(embed=embedMsg)
 
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")
-            raise Exception(e)
 
     async def send_github_activities(self, ctx, events: list[GithubEvent]):
         try:
@@ -43,9 +47,9 @@ class DiscordView:
                     embedMsg.set_author(name=event.author.name, url=event.author.url, icon_url=event.author.avatar_url)
 
                 if event.created_at is not None:
-                    dt = event.created_at
-                    formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
-                    embedMsg.set_footer(text=formatted_dt)
+                    embedMsg.set_footer(
+                        text=event.created_at.strftime("%Y/%m/%d %H:%M:%S")
+                    )
 
                 await ctx.send(embed=embedMsg)
 
