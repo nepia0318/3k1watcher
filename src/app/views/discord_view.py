@@ -1,10 +1,11 @@
 import discord
-import textwrap
 from logging import getLogger
-logger = getLogger(__name__)
 
 from ..dto.search_result import SearchResult
 from ..dto.github_event import GithubEvent
+
+logger = getLogger(__name__)
+
 
 class DiscordView:
     async def send_search_results(self, ctx, results: list[SearchResult]):
@@ -34,10 +35,10 @@ class DiscordView:
                     description=event.message
                 )
 
-                if event.author != None:
+                if event.author is not None:
                     embedMsg.set_author(name=event.author.name, url=event.author.url, icon_url=event.author.avatar_url)
 
-                if event.created_at != None:
+                if event.created_at is not None:
                     dt = event.created_at
                     formatted_dt = dt.strftime("%Y/%m/%d %H:%M:%S")
                     embedMsg.set_footer(text=formatted_dt)

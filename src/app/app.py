@@ -10,11 +10,12 @@ from .controllers.message_controller import MessageController
 logger = getLogger(__name__)
 logger_disc = getLogger('discord')
 
+
 class App:
     def __init__(self):
         load_dotenv()
-        self.token=os.getenv("DISCORD_APP_TOKEN")
-        self.is_dev=os.getenv("IS_DEV")
+        self.token = os.getenv("DISCORD_APP_TOKEN")
+        self.is_dev = os.getenv("IS_DEV")
         self.controller = MessageController()
         with open('src/app/resources/log_config.json', 'r') as f:
             config.dictConfig(json.load(f))
@@ -54,15 +55,19 @@ class App:
 
         bot.run(self.token, log_handler=None)
 
+
 def cmd_name(name, isDev):
     if isDev:
         return f'{name}-dev'
     return name
 
+
 app = App()
+
 
 def main() -> None:
     app.main()
+
 
 if __name__ == "__main__":
     main()

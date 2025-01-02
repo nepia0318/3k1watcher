@@ -1,12 +1,14 @@
 import pytest
 
 from src.app.dto.search_result import SearchResult
+
+
 class TestSearchResult:
     @pytest.fixture
     def mock_json(self) -> dict:
         return {
-            "title" : "title1",
-            "link" : "https://example.com/article1",
+            "title": "title1",
+            "link": "https://example.com/article1",
             "snippet": "description1"
         }
 

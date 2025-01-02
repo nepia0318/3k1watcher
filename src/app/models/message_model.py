@@ -1,5 +1,4 @@
 import os
-import json
 import requests
 from dotenv import load_dotenv
 from logging import getLogger
@@ -9,6 +8,7 @@ from ..dto.search_result import SearchResult
 from ..dto.github_event import GithubEvent
 
 logger = getLogger(__name__)
+
 
 class MessageModel:
     def __init__(self):

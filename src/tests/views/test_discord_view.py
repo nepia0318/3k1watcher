@@ -1,10 +1,11 @@
 import pytest
-from datetime import datetime
 import discord
+from datetime import datetime
 from pytest_mock import MockerFixture
 
 from src.app.dto.search_result import SearchResult
 from src.app.dto.github_event import GithubEvent, GithubAccount
+
 
 class TestDiscordView:
     @pytest.fixture
@@ -82,12 +83,11 @@ class TestDiscordView:
         assert embed_call2.url == "https://example.com/article2"
         assert embed_call2.description == "description2"
 
-
     @pytest.mark.asyncio
     async def test_send_search_results_error(self, mocker, discord_view, mock_ctx):
         mock_ctx.send.side_effect = Exception("View error.")
 
-        with pytest.raises(Exception) as e:
+        with pytest.raises(Exception):
             await discord_view.send_search_results(mock_ctx, [])
 
         mock_ctx.send.assert_called_with("取得に失敗しました")
@@ -128,7 +128,7 @@ class TestDiscordView:
     async def test_send_github_activities_error(self, mocker, discord_view, mock_ctx):
         mock_ctx.send.side_effect = Exception("View error.")
 
-        with pytest.raises(Exception) as e:
+        with pytest.raises(Exception):
             await discord_view.send_github_activities(mock_ctx, [])
 
         mock_ctx.send.assert_called_with("取得に失敗しました")

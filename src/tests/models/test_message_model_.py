@@ -5,6 +5,7 @@ from googleapiclient.errors import HttpError
 from src.app.dto.search_result import SearchResult
 from src.app.dto.github_event import GithubEvent
 
+
 class TestMessageModel:
     @pytest.fixture
     def message_model(self):
@@ -21,18 +22,18 @@ class TestMessageModel:
     def mock_search_response(self):
         return {
             "items":
-                [
-                    {
-                        "title": "title1",
-                        "link" : "https://exmaple.com/1",
-                        "snippet": "description1"
-                    },
-                    {
-                        "title": "title2",
-                        "link" : "https://exmaple.com/2",
-                        "snippet": "description2"
-                    },
-                ],
+            [
+                {
+                    "title": "title1",
+                    "link": "https://exmaple.com/1",
+                    "snippet": "description1"
+                },
+                {
+                    "title": "title2",
+                    "link": "https://exmaple.com/2",
+                    "snippet": "description2"
+                },
+            ],
             "searchInformation": {
                 "totalResults": 2
             }
@@ -54,8 +55,8 @@ class TestMessageModel:
     @pytest.fixture
     def mock_github_activities_response(self):
         return [
-            {"foo" : "bar"},
-            {"foo" : "baz"}
+            {"foo": "bar"},
+            {"foo": "baz"}
         ]
 
     def test_get_search_results_success(
@@ -63,7 +64,10 @@ class TestMessageModel:
             mock_search_response, mock_search_results):
         mock_service = mocker.MagicMock()
         mock_service.cse().list().execute.return_value = mock_search_response
-        mocker.patch("src.app.models.message_model.build", return_value=mock_service)
+        mocker.patch(
+            "src.app.models.message_model.build",
+            return_value=mock_service
+        )
 
         query = "3k1"
         results = message_model.get_search_results(query)

@@ -1,6 +1,4 @@
 import os
-import re
-import discord
 from dotenv import load_dotenv
 from logging import getLogger
 
@@ -9,6 +7,7 @@ from ..views.discord_view import DiscordView
 
 
 logger = getLogger(__name__)
+
 
 class MessageController:
     def __init__(self):

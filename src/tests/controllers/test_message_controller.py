@@ -3,6 +3,7 @@ from pytest_mock import MockerFixture
 
 from src.app.dto.search_result import SearchResult
 
+
 class TestMessageController:
     @pytest.fixture
     def message_controller(self):
@@ -35,12 +36,12 @@ class TestMessageController:
     @pytest.fixture
     def mock_github_events(self):
         return [
-            {"foo" : "bar"},
-            {"foo" : "baz"}
+            {"foo": "bar"},
+            {"foo": "baz"}
         ]
 
     @pytest.mark.asyncio
-    async def test_search_result(self, mocker:MockerFixture, message_controller, mock_search_results):
+    async def test_search_result(self, mocker: MockerFixture, message_controller, mock_search_results):
         mocker.patch(
             "src.app.controllers.message_controller.MessageModel.get_search_results",
             return_value=mock_search_results

@@ -1,12 +1,14 @@
 import pytest
 
 from src.app.dto.github_account import GithubAccount
+
+
 class TestGithubAccount:
     @pytest.fixture
     def mock_json(self) -> dict:
         return {
-            "display_login" : "user1",
-            "url" : "https://example.com/user1",
+            "display_login": "user1",
+            "url": "https://example.com/user1",
             "avatar_url": "https://example.com/user1/avatar_url"
         }
 

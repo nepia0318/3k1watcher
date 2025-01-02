@@ -1,15 +1,18 @@
 import pytest
 import textwrap
 from datetime import datetime
+
 from src.app.dto.github_event import GithubEvent
+
+
 class TestGithubEvent:
     @pytest.fixture
     def mock_create_event_json(self) -> dict:
         return {
             "type": "CreateEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {
@@ -24,8 +27,8 @@ class TestGithubEvent:
         return {
             "type": "PushEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {
@@ -50,8 +53,8 @@ class TestGithubEvent:
         return {
             "type": "ForkEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {
@@ -72,8 +75,8 @@ class TestGithubEvent:
         return {
             "type": "IssuesEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {
@@ -95,8 +98,8 @@ class TestGithubEvent:
         return {
             "type": "IssuesEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {
@@ -118,8 +121,8 @@ class TestGithubEvent:
         return {
             "type": "OtherEvent",
             "actor": {
-                "display_login" : "user1",
-                "url" : "https://example.com/user1",
+                "display_login": "user1",
+                "url": "https://example.com/user1",
                 "avatar_url": "https://example.com/user1/avatar_url"
             },
             "repo": {

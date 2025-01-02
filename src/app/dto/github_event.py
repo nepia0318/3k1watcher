@@ -4,6 +4,7 @@ from datetime import datetime
 
 from .github_account import GithubAccount
 
+
 @dataclass
 class GithubEvent:
     title: str = ""
@@ -41,7 +42,7 @@ class GithubEvent:
     def parse_github_create_event(self, json) -> None:
         self.title = json["repo"]["name"]
         self.url = self.get_html_url_from_api_url(json["repo"]["url"])
-        self.message = textwrap.dedent(f"""\
+        self.message = textwrap.dedent("""\
             リポジトリを作成しました\
         """).strip()
 
