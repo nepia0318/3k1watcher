@@ -1,17 +1,17 @@
 import discord
 from logging import getLogger
 
-from ..dto.search_result import SearchResult
-from ..dto.github_event import GithubEvent
+from src.app.dto.search_results import SearchResults
+from src.app.dto.github_event import GithubEvent
 
 logger = getLogger(__name__)
 
 
 class DiscordView:
-    async def send_search_results(self, ctx, results: list[SearchResult]):
+    async def send_search_results(self, ctx, results: SearchResults) -> None:
         try:
-            await ctx.send(f"まん３に関する検索結果が{len(results)}件ヒットしました")
-            for result in results:
+            await ctx.send(f"まん３に関する検索結果が{results.total}件ヒットしました")
+            for result in results.items:
                 embedMsg = discord.Embed(
                     title=result.title,
                     url=result.url,
@@ -24,6 +24,7 @@ class DiscordView:
         except Exception as e:
             logger.error(f"Error: {e}")
             await ctx.send("取得に失敗しました")
+            raise Exception(e)
 
     async def send_github_activities(self, ctx, events: list[GithubEvent]):
         try:
