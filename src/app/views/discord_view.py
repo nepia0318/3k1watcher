@@ -11,15 +11,16 @@ logger = getLogger(__name__)
 class DiscordView:
     async def send_search_results(self, ctx, results: SearchResults) -> None:
         try:
-            await ctx.send(f"まん３に関する検索結果が{results.total}件ヒットしました")
+            await ctx.send(
+                f"[まん３に関する検索結果]({results.web_search_url})が{results.total}件ヒットしました"
+            )
             for result in results.items:
                 md_snippet = re.compile("</*b>").sub("**", result.snippet)
-                print(md_snippet)
                 embedMsg = discord.Embed(
                     title=result.title,
                     url=result.url,
                     description=md_snippet,
-                    color=discord.Colour.green()
+                    color=discord.Colour.blurple()
                 )
 
                 if result.last_crawled is not None:
@@ -40,7 +41,8 @@ class DiscordView:
                 embedMsg = discord.Embed(
                     title=event.title,
                     url=event.url,
-                    description=event.message
+                    description=event.message,
+                    color=discord.Colour.green()
                 )
 
                 if event.author is not None:
