@@ -81,7 +81,7 @@ class TestDiscordView:
         self, mocker: MockerFixture, discord_view,
             mock_ctx, mock_search_results):
         await discord_view.send_search_results(mock_ctx, mock_search_results)
-        mock_ctx.send.assert_any_call("まん３に関する検索結果が2件ヒットしました")
+        mock_ctx.send.assert_any_call("[まん３に関する検索結果](https://example.com/search?q=3k1)が2件ヒットしました")
 
         calls = mock_ctx.send.call_args_list
         assert len(calls) == 3
